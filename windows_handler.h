@@ -1,6 +1,8 @@
 #ifndef WINDOWS_T
 #define WINDOWS_T
-#define WM_CUDA_SAMPLE_MSG_DESTROY      (WM_APP + 1)
+
+
+#define WM_CUDA_SAMPLE_MSG_DESTROY          (WM_APP + 1)
 
 #include "framework.h"
 

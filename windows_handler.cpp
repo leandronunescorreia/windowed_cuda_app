@@ -1,6 +1,7 @@
 #include "windows_handler.h"
 
 
+
 long windows_create(Windows_t* parent, HINSTANCE hInstance, WNDPROC windowsProc) {
     WNDCLASSEXW wcex;
 
@@ -45,9 +46,6 @@ long windows_create(Windows_t* parent, HINSTANCE hInstance, WNDPROC windowsProc)
 
     parent->windowsHandle = hWnd;
     parent->isRunning = true;
-
-    SetWindowLongPtr(parent->windowsHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(parent));
-
 
     return 1;
 }

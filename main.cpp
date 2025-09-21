@@ -7,19 +7,33 @@ const wchar_t windowClassName[] = L"CUDA_SAMPLE";
 
 #define WM_CUDA_SAMPLE_MSG_LOAD_IMAGE   (WM_USER + 1)
 
+typedef struct {
+    Bitmap_t* bitmap;
+    Windows_t* windows;
+} AppWindowData;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
 
-    Windows_t* pWin = reinterpret_cast<Windows_t*>(
-        GetWindowLongPtr(hWnd, GWLP_USERDATA)
-        );
+    AppWindowData* data = reinterpret_cast<AppWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
+    if (data) {
+        // Now you can access both
+        Bitmap_t* bmp = data->bitmap;
+        Windows_t* win = data->windows;
+    }
 
     switch (message) {
         case WM_PAINT: {
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(pWin->windowsHandle, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(pWin->windowsHandle, &ps);
+            HDC            hdc;
+            hdc = ::BeginPaint(data->windows->windowsHandle, &ps);
+
+            if (data->windows->windowsHandle && data->bitmap) {
+                drawBitmap(data->windows->windowsHandle, data->bitmap, 0, 0);
+            }
+
+            ::EndPaint(data->windows->windowsHandle, &ps);
             break;
         }
 
@@ -43,6 +57,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
 }
 
 
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -52,9 +67,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	wcscpy_s(win.className, L"CUDA_SAMPLE");
 	windows_create(&win, hInstance, WndProc);
 
+    Bitmap_t bitmap = { 0 };
+    windowsBitmapCreate(win.windowsHandle, &bitmap, 100, 100, 3);
+
+    AppWindowData* data = new AppWindowData{ &bitmap, &win };
+    // Before calling SetWindowLongPtr, check that win.windowsHandle is not NULL (0)
+    if (win.windowsHandle != NULL && win.windowsHandle != 0) {
+        SetWindowLongPtr(win.windowsHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
+    }
+
     while (win.isRunning) {
 		windowsGetEvents(&win);
     }
+
+    windowsDestroy(&win);
+	destroyBitmap(&bitmap);
 
     return 1;
 }

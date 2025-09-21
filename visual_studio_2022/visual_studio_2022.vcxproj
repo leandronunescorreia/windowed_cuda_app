@@ -137,6 +137,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\bitmap_t.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\windows_handler.cpp" />
   </ItemGroup>
