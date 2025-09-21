@@ -13,9 +13,11 @@
 
 # Linker files
 *.ilk
+*.map
 
 # Debugger Files
 *.pdb
+*.idb
 
 # Compiled Dynamic libraries
 *.so
@@ -37,5 +39,84 @@
 *.out
 *.app
 
-# debug information files
+# Debug information files
 *.dwo
+
+# Visual Studio files
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.sdf
+*.opensdf
+*.cache
+*.log
+*.tlog/
+*.ipch
+*.iobj
+*.ipdb
+*.lastbuildstate
+*.db
+*.VC.db
+*.VC.VC.opendb
+*.user
+*.rsuser
+*.sln.docstates
+
+# Build results
+[Bb]uild/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+ARM/
+ARM64/
+*.bin
+*.obj
+*.dll
+*.exe
+*.lib
+*.exp
+
+# Generated files
+*.ncb
+*.sbr
+*.tlh
+*.tli
+*.tmp
+*.bak
+*.swp
+
+# CUDA build artifacts
+*.cu.obj
+*.cu.ptx
+*.cu.cubin
+*.cu.d
+*.cu.exp
+*.cu.lib
+
+# Others
+*.log
+*.vspscc
+*.vssscc
+*.psess
+*.vsp
+*.vspx
+*.coverage
+*.coveragexml
+*.testsettings
+*.vsmdi
+*.cachefile
+*.dbmdl
+*.pfx
+*.publishsettings
+*.userosscache
+*.scc
+*.orig
+*.rej
+*.suo
+*.user
+*.tmp
+*.bak
+*.swp
+*.sln.docstates
