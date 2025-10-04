@@ -54,6 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.8.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -100,13 +101,22 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.//;$(SolutionDir)//;..//app//include;$(CUDA_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CudaCompile>
+      <CodeGeneration>compute_86,sm_86</CodeGeneration>
+      <AdditionalOptions>-allow-unsupported-compiler %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
+    <PreBuildEvent>
+      <Command>copy /Y "$(CUDA_PATH)\bin\cudart64_110.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -130,18 +140,22 @@
     <Image Include="visual_studio_2022.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\bitmap_t.h" />
-    <ClInclude Include="..\framework.h" />
-    <ClInclude Include="..\windows_handler.h" />
+    <ClInclude Include="..\app\include\bitmap_t.h" />
+    <CudaCompile Include="..\app\include\cuda_gfx.h" />
+    <ClInclude Include="..\app\include\framework.h" />
+    <ClInclude Include="..\app\include\SimpleNeuralNetwork.h" />
+    <ClInclude Include="..\app\include\windows_handler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\bitmap_t.cpp" />
-    <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\windows_handler.cpp" />
+    <ClCompile Include="..\app\src\bitmap_t.cpp" />
+    <CudaCompile Include="..\app\src\cuda_gfx.cu" />
+    <ClCompile Include="..\app\src\main.cpp" />
+    <ClCompile Include="..\app\src\windows_handler.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.8.targets" />
   </ImportGroup>
 </Project>

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "visual_studio_2022/targetver.h"
-#include "visual_studio_2022/resource.h"
+#include "targetver.h"
+#include "resource.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <windows.h>
@@ -16,3 +16,5 @@
 #include <tchar.h>
 
 #include "bitmap_t.h"
+
+#include "cuda_gfx.h"

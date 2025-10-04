@@ -10,6 +10,7 @@ const wchar_t windowClassName[] = L"CUDA_SAMPLE";
 typedef struct {
     Bitmap_t* bitmap;
     Windows_t* windows;
+	cuda_gfx_t* cudaGFX;
 } AppWindowData;
 
 
@@ -18,7 +19,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
     AppWindowData* data = reinterpret_cast<AppWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
     if (data) {
-        // Now you can access both
         Bitmap_t* bmp = data->bitmap;
         Windows_t* win = data->windows;
     }
@@ -26,11 +26,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
     switch (message) {
         case WM_PAINT: {
             PAINTSTRUCT ps;
-            HDC            hdc;
+            HDC hdc;
             hdc = ::BeginPaint(data->windows->windowsHandle, &ps);
 
             if (data->windows->windowsHandle && data->bitmap) {
-                drawBitmap(data->windows->windowsHandle, data->bitmap, 0, 0);
+                RECT clientRect;
+                GetClientRect(data->windows->windowsHandle, &clientRect);
+                int clientWidth = clientRect.right - clientRect.left;
+                int clientHeight = clientRect.bottom - clientRect.top;
+
+                int x = (clientWidth - data->bitmap->width) / 2;
+                int y = (clientHeight - data->bitmap->height) / 2;
+
+                drawBitmap(data->windows->windowsHandle, data->bitmap, x, y);
             }
 
             ::EndPaint(data->windows->windowsHandle, &ps);
@@ -48,6 +56,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
                 pWin->isRunning = false;
                 windowsDestroy(pWin);
             }
+            break;
+        }
+
+        case WM_KEYDOWN: {
+            if (wParam == VK_ESCAPE) {
+                PostQuitMessage(0);
+            }
+            break;
         }
 
         default:
@@ -68,9 +84,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	windows_create(&win, hInstance, WndProc);
 
     Bitmap_t bitmap = { 0 };
-    windowsBitmapCreate(win.windowsHandle, &bitmap, 100, 100, 3);
+    windowsBitmapCreate(win.windowsHandle, &bitmap, 256, 256, 3);
 
-    AppWindowData* data = new AppWindowData{ &bitmap, &win };
+	cuda_gfx_t cudaGFX = { 0 };
+
+	double to_device_copy_time = toDevice(&cudaGFX, bitmap.data, bitmap.width, bitmap.height);
+	double execution_time = run(&cudaGFX);
+	double to_host_copy_time =  toHost(&cudaGFX, bitmap.data);
+
+
+    AppWindowData* data = new AppWindowData{ &bitmap, &win, &cudaGFX };
     // Before calling SetWindowLongPtr, check that win.windowsHandle is not NULL (0)
     if (win.windowsHandle != NULL && win.windowsHandle != 0) {
         SetWindowLongPtr(win.windowsHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
@@ -82,6 +105,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     windowsDestroy(&win);
 	destroyBitmap(&bitmap);
+	cleanup(&cudaGFX);
 
     return 1;
 }
